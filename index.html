@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/analysis-flashcards/manifest.json">
+    <title>Analysis Flashcards</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <script defer src="https://cdn.jsdelivr.net"></script>
+    <script defer src="https://cdn.jsdelivr.net"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; height: 100vh; overflow: hidden; }
+        #status { margin-top: 20px; font-size: 0.8rem; color: #8e8e93; }
+        .card { width: 85%; max-width: 400px; height: 50vh; background: white; border-radius: 20px; margin: 20px 0; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); cursor: pointer; overflow-y: auto; -webkit-overflow-scrolling: touch; font-size: 1.1rem; line-height: 1.5; }
+        .controls { display: flex; gap: 10px; width: 85%; max-width: 400px; margin-bottom: 10px; }
+        button { flex: 1; padding: 15px; font-size: 1rem; font-weight: 600; border-radius: 12px; border: none; color: white; cursor: pointer; }
+        .btn-red { background: #ff3b30; } .btn-green { background: #34c759; } .btn-blue { background: #007aff; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="status">Lade...</div>
+    <div id="card" class="card">Tippe zum Starten</div>
+    <div class="controls">
+        <button class="btn-red" onclick="markCard(false)">❌ Falsch</button>
+        <button class="btn-green" onclick="markCard(true)">✅ Richtig</button>
+    </div>
+    <div class="controls"><button class="btn-blue" onclick="toggleReviewMode()">Filter: Nur Falsche</button></div>
+    <script>
+        const initialCards = [
+            { q: "Beweise: $|x + y| = |x| + |y| \Leftrightarrow xy \ge 0$", a: "<b>1) $\\Rightarrow$:</b> $|x+y|^2 = (|x|+|y|)^2 \\Rightarrow xy = |x||y| \\Rightarrow xy \ge 0$.<br><b>2) $\\Leftarrow$:</b> Haben ,y$ selbes Vorzeichen, gilt Gleichheit direkt." },
+            { q: "Löse $|x - 2| \ge 10$", a: "-2 \le -10$ oder -2 \ge 10$<br>$\\Rightarrow x \le -8$ oder  \ge 12$<br> = (-\infty, -8] \cup [12, \infty)$" },
+            { q: "Löse $|x| > |x + 1|$", a: "^2 > (x+1)^2 \\Rightarrow x^2 > x^2 + 2x + 1 \\Rightarrow 2x < -1 \\Rightarrow x < -1/2$" },
+            { q: "Beweise per Induktion: $\\sum_{k=1}^n k^2 = \\frac{n(n+1)(2n+1)}{6}$", a: "IA: =1 \\Rightarrow 1=1$. IS: (n) + (n+1)^2 = \\frac{(n+1)(2n^2+7n+6)}{6} = \\frac{(n+1)(n+2)(2n+3)}{6}$" }
+        ];
+
+        let allCards = JSON.parse(localStorage.getItem('flash_data')) || initialCards;
+        let currentQueue = [...allCards];
+        let index = 0, showAnswer = false, reviewMode = false;
+
+        function render() {
+            const cardEl = document.getElementById('card');
+            const statusEl = document.getElementById('status');
+            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten markiert!"; return; }
+            const card = currentQueue[index];
+            cardEl.innerHTML = showAnswer ? card.a : card.q;
+            statusEl.innerText = (reviewMode ? "Modus: Wiederholung" : "Modus: Alle") + " (" + (index + 1) + "/" + currentQueue.length + ")";
+            if(window.renderMathInElement) renderMathInElement(cardEl, { delimiters: [{left: "13652", right: "13652", display: true}, {left: "$", right: "$", display: false}] });
+        }
+
+        function markCard(correct) {
+            const cardQ = currentQueue[index].q;
+            allCards.find(c => c.q === cardQ).needsReview = !correct;
+            localStorage.setItem('flash_data', JSON.stringify(allCards));
+            nextCard();
+        }
+
+        function toggleReviewMode() {
+            reviewMode = !reviewMode;
+            currentQueue = reviewMode ? allCards.filter(c => c.needsReview) : [...allCards];
+            index = 0; showAnswer = false; render();
+        }
+
+        function nextCard() { if(currentQueue.length > 0) index = (index + 1) % currentQueue.length; showAnswer = false; render(); }
+        document.getElementById('card').onclick = () => { showAnswer = !showAnswer; render(); };
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/analysis-flashcards/sw.js');
+        }
+        window.onload = render;
+    </script>
+</body>
+</html>

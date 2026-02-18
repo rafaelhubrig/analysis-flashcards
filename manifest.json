@@ -1,0 +1,9 @@
+{
+  "name": "Analysis Flashcards",
+  "short_name": "MathCards",
+  "start_url": "/analysis-flashcards/",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "icons": [{ "src": "https://cdn-icons-png.flaticon.com", "sizes": "512x512", "type": "image/png" }]
+}
