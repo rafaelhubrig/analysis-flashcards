@@ -77,20 +77,43 @@
             });
         }
 
-        function selectDeck(id) {
-            currentDeckId = id;
-            const script = document.createElement('script');
-            script.src = `${id}.js`;
-            script.onload = () => {
-                const rawData = window[id];
-                allCards = JSON.parse(localStorage.getItem('flash_' + id)) || rawData;
-                document.getElementById('menu').style.display = 'none';
-                document.getElementById('game').style.display = 'flex';
-                currentQueue = [...allCards];
-                index = 0; showAnswer = false; render();
-            };
-            document.head.appendChild(script);
+function selectDeck(id) {
+    currentDeckId = id;
+    
+    // Altes Skript entfernen, falls vorhanden (sauberer Reload)
+    const oldScript = document.getElementById('deck-script');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'deck-script';
+    script.src = `${id}.js?t=` + Date.now(); // Cache-Busting
+    
+    script.onload = () => {
+        const rawData = window[id]; 
+        
+        if (!rawData) {
+            alert(`Fehler: In der Datei ${id}.js wurde keine Variable namens "${id}" gefunden!`);
+            return;
         }
+
+        const savedData = JSON.parse(localStorage.getItem('flash_' + id));
+        allCards = savedData || rawData;
+        
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('game').style.display = 'flex';
+        currentQueue = [...allCards];
+        index = 0; 
+        showAnswer = false; 
+        render();
+    };
+
+    script.onerror = () => {
+        alert(`Datei ${id}.js konnte nicht geladen werden. Prüfe den Dateinamen auf GitHub!`);
+    };
+
+    document.head.appendChild(script);
+}
+
 
         function render() {
             const cardEl = document.getElementById('card');
