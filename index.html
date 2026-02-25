@@ -4,23 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Analysis Flashcards</title>
     
-    <!-- KaTeX via CDN (Internet) - Damit Fehler im lib-Ordner ausgeschlossen sind -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
-    <script defer src="https://cdn.jsdelivr.net"></script>
-    <script defer src="https://cdn.jsdelivr.net"></script>
+    <!-- LOKALE PFADE (Kein CDN, um Blockierung zu vermeiden) -->
+    <link rel="stylesheet" href="lib/katex.min.css">
+    <script src="lib/katex.min.js"></script>
+    <script src="lib/auto-render.min.js"></script>
 
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; min-height: 100vh; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; min-height: 100vh; color: #1c1c1e; }
         #menu, #game { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
-        .card { width: 100%; height: 55vh; background: white; border-radius: 25px; margin: 20px 0; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); cursor: pointer; overflow-y: auto; font-size: 1.15rem; line-height: 1.6; box-sizing: border-box; }
+        h2 { margin-top: 40px; font-weight: 700; }
+        
+        .card { width: 100%; height: 55vh; background: white; border-radius: 25px; margin: 20px 0; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); cursor: pointer; overflow-y: auto; font-size: 1.15rem; line-height: 1.6; display: flex; flex-direction: column; box-sizing: border-box; transition: transform 0.1s; }
+        .card:active { transform: scale(0.98); }
+
         .controls { display: flex; gap: 12px; width: 100%; margin-bottom: 12px; }
-        button { flex: 1; padding: 18px; font-size: 1rem; font-weight: 600; border-radius: 15px; border: none; color: white; cursor: pointer; }
-        .btn-red { background: #ff3b30; } .btn-green { background: #34c759; } .btn-blue { background: #007aff; }
+        button { flex: 1; padding: 18px; font-size: 1rem; font-weight: 600; border-radius: 15px; border: none; color: white; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        
+        .btn-red { background: #ff3b30; } 
+        .btn-green { background: #34c759; } 
+        .btn-blue { background: #007aff; }
         .btn-gray { background: #8e8e93; width: auto; align-self: flex-start; padding: 10px 20px; margin-bottom: 15px; }
-        .deck-btn { background: white; color: #007aff; border: 1.5px solid #007aff; margin-bottom: 12px; width: 100%; text-align: left; padding-left: 20px; }
-        #status { font-size: 0.85rem; color: #8e8e93; font-weight: 500; margin-bottom: 5px; }
+        
+        .deck-btn { background: white; color: #007aff; border: 1.5px solid #007aff; margin-bottom: 12px; width: 100%; text-align: left; padding: 15px 20px; font-size: 1rem; border-radius: 12px; }
+
+        #status { font-size: 0.85rem; color: #8e8e93; font-weight: 500; margin-bottom: 5px; text-transform: uppercase; }
+        #loader { font-size: 0.9rem; color: #007aff; margin: 20px; }
     </style>
 </head>
 <body>
@@ -49,22 +60,30 @@
             const list = document.getElementById('deck-list');
             const loader = document.getElementById('loader');
             const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
+            
             if (cachedDecks) { renderDeckButtons(cachedDecks); loader.style.display = "none"; }
+
             try {
                 const response = await fetch('decks.json?t=' + Date.now());
+                if (!response.ok) throw new Error();
                 const decks = await response.json();
                 localStorage.setItem('deck_list_cache', JSON.stringify(decks));
                 renderDeckButtons(decks);
                 loader.style.display = "none";
-            } catch (e) { if (!cachedDecks) loader.innerText = "Fehler: decks.json nicht gefunden."; }
+            } catch (e) {
+                if (!cachedDecks) loader.innerText = "Fehler: Decks konnten nicht geladen werden.";
+            }
         }
 
         function renderDeckButtons(decks) {
-            const list = document.getElementById('deck-list'); list.innerHTML = "";
+            const list = document.getElementById('deck-list');
+            list.innerHTML = "";
             decks.forEach(id => {
-                const btn = document.createElement('button'); btn.className = "deck-btn";
+                const btn = document.createElement('button');
+                btn.className = "deck-btn";
                 btn.innerText = id.replace('cards_', '').replace(/_/g, ' ').toUpperCase();
-                btn.onclick = () => selectDeck(id); list.appendChild(btn);
+                btn.onclick = () => selectDeck(id);
+                list.appendChild(btn);
             });
         }
 
@@ -74,59 +93,69 @@
             script.src = `${id}.js?t=` + Date.now();
             script.onload = () => {
                 const rawData = window[id];
-                // WICHTIG: Wir laden nur aus LocalStorage, wenn Daten da sind, sonst IMMER rawData (frische Backslashes!)
+                if (!rawData) { alert("Variable " + id + " fehlt in der Datei!"); return; }
                 allCards = JSON.parse(localStorage.getItem('flash_' + id)) || rawData;
                 document.getElementById('menu').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
-                currentQueue = [...allCards]; index = 0; showAnswer = false; render();
+                currentQueue = [...allCards];
+                index = 0; showAnswer = false; render();
             };
             document.head.appendChild(script);
         }
 
-function render() {
-    const cardEl = document.getElementById('card');
-    const statusEl = document.getElementById('status');
-    if (!currentQueue || currentQueue.length === 0) { 
-        cardEl.innerHTML = "Keine Karten!"; 
-        return; 
-    }
-    
-    const card = currentQueue[index];
-    // Wir setzen den Text
-    cardEl.innerHTML = showAnswer ? card.a : card.q;
-    statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
+        function render() {
+            const cardEl = document.getElementById('card');
+            const statusEl = document.getElementById('status');
+            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten!"; return; }
+            
+            const card = currentQueue[index];
+            cardEl.innerHTML = showAnswer ? card.a : card.q;
+            statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
 
-    // HOLZHAMMER: Wir warten 50ms, bis der Text sicher im DOM ist
-    setTimeout(() => {
-        if (window.renderMathInElement) {
-            renderMathInElement(cardEl, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ],
-                throwOnError: false,
-                trust: true
-            });
-        } else {
-            console.error("KaTeX wurde nicht geladen!");
+            // Verzögertes Rendern für Safari / iOS Stabilität
+            setTimeout(() => {
+                if (typeof renderMathInElement === 'function') {
+                    renderMathInElement(cardEl, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "$", right: "$", display: false}
+                        ],
+                        throwOnError: false
+                    });
+                }
+            }, 30);
         }
-    }, 50);
-}
 
         function markCard(correct) {
+            if (currentQueue.length === 0) return;
             allCards.find(c => c.q === currentQueue[index].q).needsReview = !correct;
             localStorage.setItem('flash_' + currentDeckId, JSON.stringify(allCards));
             nextCard();
         }
+
         function toggleReviewMode() {
             reviewMode = !reviewMode;
             document.getElementById('filterBtn').innerText = reviewMode ? "Alle anzeigen" : "Nur Falsche üben";
             currentQueue = reviewMode ? allCards.filter(c => c.needsReview) : [...allCards];
             index = 0; showAnswer = false; render();
         }
-        function nextCard() { index = (currentQueue.length > 0) ? (index + 1) % currentQueue.length : 0; showAnswer = false; render(); }
-        function backToMenu() { document.getElementById('menu').style.display = 'flex'; document.getElementById('game').style.display = 'none'; loadMenu(); }
+
+        function nextCard() { 
+            index = (currentQueue.length > 0) ? (index + 1) % currentQueue.length : 0; 
+            showAnswer = false; render(); 
+        }
+
+        function backToMenu() { 
+            document.getElementById('menu').style.display = 'flex'; 
+            document.getElementById('game').style.display = 'none'; 
+        }
+
         document.getElementById('card').onclick = () => { showAnswer = !showAnswer; render(); };
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
         window.onload = loadMenu;
     </script>
 </body>
