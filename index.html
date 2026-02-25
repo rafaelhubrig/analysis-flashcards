@@ -8,6 +8,8 @@
     <title>Analysis Flashcards</title>
     <link rel="stylesheet" href="lib/katex/katex.min.css">
     <script defer src="lib/katex/katex.min.js"></script>
+    <script defer src="lib/katex/contrib/auto-render.min.js"></script>
+
     <style>
         body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; height: 100vh; overflow: hidden; }
         #status { margin-top: 20px; font-size: 0.8rem; color: #8e8e93; }
@@ -27,25 +29,52 @@
     <div class="controls"><button class="btn-blue" onclick="toggleReviewMode()">Filter: Nur Falsche</button></div>
     <script>
         const initialCards = [
-            { q: "Beweise: $|x + y| = |x| + |y| \Leftrightarrow xy \ge 0$", a: "<b>1) $\\Rightarrow$:</b> $|x+y|^2 = (|x|+|y|)^2 \\Rightarrow xy = |x||y| \\Rightarrow xy \ge 0$.<br><b>2) $\\Leftarrow$:</b> Haben ,y$ selbes Vorzeichen, gilt Gleichheit direkt." },
-            { q: "Löse $|x - 2| \ge 10$", a: "-2 \le -10$ oder -2 \ge 10$<br>$\\Rightarrow x \le -8$ oder  \ge 12$<br> = (-\infty, -8] \cup [12, \infty)$" },
-            { q: "Löse $|x| > |x + 1|$", a: "^2 > (x+1)^2 \\Rightarrow x^2 > x^2 + 2x + 1 \\Rightarrow 2x < -1 \\Rightarrow x < -1/2$" },
-            { q: "Beweise per Induktion: $\\sum_{k=1}^n k^2 = \\frac{n(n+1)(2n+1)}{6}$", a: "IA: =1 \\Rightarrow 1=1$. IS: (n) + (n+1)^2 = \\frac{(n+1)(2n^2+7n+6)}{6} = \\frac{(n+1)(n+2)(2n+3)}{6}$" }
-        ];
+    { 
+        q: "Beweise: $|x + y| = |x| + |y| \\Leftrightarrow xy \\ge 0$", 
+        a: "<b>1) $\\Rightarrow$:</b> $|x+y|^2 = (|x|+|y|)^2 \\Rightarrow xy = |x||y| \\Rightarrow xy \\ge 0$.<br><b>2) $\\Leftarrow$:</b> Haben $x, y$ selbes Vorzeichen, gilt Gleichheit direkt." 
+    },
+    { 
+        q: "Löse $|x - 2| \\ge 10$", 
+        a: "$x-2 \\le -10$ oder $x-2 \\ge 10$<br>$\\Rightarrow x \\le -8$ oder $x \\ge 12$<br> $L = (-\\infty, -8] \\cup [12, \\infty)$" 
+    },
+    { 
+        q: "Löse $|x| > |x + 1|$", 
+        a: "$x^2 > (x+1)^2 \\Rightarrow x^2 > x^2 + 2x + 1 \\Rightarrow 2x < -1 \\Rightarrow x < -1/2$" 
+    },
+    { 
+        q: "Beweise per Induktion: $\\sum_{k=1}^n k^2 = \\frac{n(n+1)(2n+1)}{6}$", 
+        a: "IA: $n=1 \\Rightarrow 1=1$.<br>IS: $S(n) + (n+1)^2 = \\frac{(n+1)(n+2)(2n+3)}{6}$" 
+    }
+];
+
 
         let allCards = JSON.parse(localStorage.getItem('flash_data')) || initialCards;
         let currentQueue = [...allCards];
         let index = 0, showAnswer = false, reviewMode = false;
 
-        function render() {
-            const cardEl = document.getElementById('card');
-            const statusEl = document.getElementById('status');
-            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten markiert!"; return; }
-            const card = currentQueue[index];
-            cardEl.innerHTML = showAnswer ? card.a : card.q;
-            statusEl.innerText = (reviewMode ? "Modus: Wiederholung" : "Modus: Alle") + " (" + (index + 1) + "/" + currentQueue.length + ")";
-            if(window.renderMathInElement) renderMathInElement(cardEl, { delimiters: [{left: "13652", right: "13652", display: true}, {left: "$", right: "$", display: false}] });
-        }
+function render() {
+    const cardEl = document.getElementById('card');
+    const statusEl = document.getElementById('status');
+    if (currentQueue.length === 0) { 
+        cardEl.innerHTML = "Keine Karten markiert!"; 
+        return; 
+    }
+    
+    const card = currentQueue[index];
+    cardEl.innerHTML = showAnswer ? card.a : card.q;
+    statusEl.innerText = (reviewMode ? "Wiederholung" : "Alle") + " (" + (index + 1) + "/" + currentQueue.length + ")";
+
+    // WICHTIG: Hier wird KaTeX getriggert
+    if (window.renderMathInElement) {
+        renderMathInElement(cardEl, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    }
+}
 
         function markCard(correct) {
             const cardQ = currentQueue[index].q;
