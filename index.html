@@ -104,27 +104,30 @@
         }
 
         function render() {
-            const cardEl = document.getElementById('card');
-            const statusEl = document.getElementById('status');
-            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten!"; return; }
-            
-            const card = currentQueue[index];
-            cardEl.innerHTML = showAnswer ? card.a : card.q;
-            statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
+    const cardEl = document.getElementById('card');
+    const statusEl = document.getElementById('status');
+    if (!currentQueue || currentQueue.length === 0) { 
+        cardEl.innerHTML = "Keine Karten!"; 
+        return; 
+    }
+    
+    const card = currentQueue[index];
+    // Text sofort setzen
+    cardEl.innerHTML = showAnswer ? card.a : card.q;
+    statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
 
-            // Verzögertes Rendern für Safari / iOS Stabilität
-            setTimeout(() => {
-                if (typeof renderMathInElement === 'function') {
-                    renderMathInElement(cardEl, {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false}
-                        ],
-                        throwOnError: false
-                    });
-                }
-            }, 30);
-        }
+    // Sofortiges Rendern ohne setTimeout
+    if (typeof renderMathInElement === 'function') {
+        renderMathInElement(cardEl, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    }
+}
+
 
         function markCard(correct) {
             if (currentQueue.length === 0) return;
