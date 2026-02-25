@@ -63,34 +63,43 @@
 
         // 1. Decks via GitHub API suchen + Offline Cache
         async function loadMenu() {
-            const list = document.getElementById('deck-list');
-            const loader = document.getElementById('loader');
-            
-            // Offline-Trick: Zuerst Cache zeigen
-            const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
-            if (cachedDecks) {
-                renderDeckButtons(cachedDecks);
-                loader.style.display = "none";
-            }
+    const list = document.getElementById('deck-list');
+    const loader = document.getElementById('loader');
+    
+    const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
+    if (cachedDecks) { renderDeckButtons(cachedDecks); loader.style.display = "none"; }
 
-            try {
-                // API Abfrage an DEIN Repo
-                const response = await fetch('https://api.github.com');
-                if (!response.ok) throw new Error();
-                
-                const files = await response.json();
-                const decks = files
-                    .filter(f => f.name.startsWith('cards_') && f.name.endsWith('.js'))
-                    .map(f => f.name.replace('.js', ''));
+    try {
+        // Wir fragen GitHub nach dem Inhalt des Hauptverzeichnisses
+        const response = await fetch('https://api.github.com', {
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
 
-                // Cache aktualisieren & neu zeichnen
-                localStorage.setItem('deck_list_cache', JSON.stringify(decks));
-                renderDeckButtons(decks);
-                loader.style.display = "none";
-            } catch (e) {
-                loader.innerText = cachedDecks ? "" : "Offline. Keine Decks gespeichert.";
-            }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'API Limit');
         }
+        
+        const files = await response.json();
+        const decks = files
+            .filter(f => f.name.startsWith('cards_') && f.name.endsWith('.js'))
+            .map(f => f.name.replace('.js', ''));
+
+        if (decks.length > 0) {
+            localStorage.setItem('deck_list_cache', JSON.stringify(decks));
+            renderDeckButtons(decks);
+            loader.style.display = "none";
+        } else {
+            loader.innerText = "Keine Dateien mit 'cards_' gefunden.";
+        }
+    } catch (e) {
+        console.error("API Fehler:", e);
+        // Zeige den spezifischen Fehler im Loader an
+        loader.innerText = e.message.includes('rate limit') 
+            ? "Limit erreicht. Bitte in 1 Std. probieren oder Cache nutzen." 
+            : "Verbindung fehlgeschlagen (API).";
+    }
+}
 
         function renderDeckButtons(decks) {
             const list = document.getElementById('deck-list');
