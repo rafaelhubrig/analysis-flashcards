@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Analysis Flashcards</title>
     
-    <link rel="stylesheet" href="lib/katex.min.css">
-    <script defer src="lib/katex.min.js"></script>
-    <script defer src="lib/contrib/auto-render.min.js"></script>
+    <!-- KaTeX via CDN (Internet) - Damit Fehler im lib-Ordner ausgeschlossen sind -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <script defer src="https://cdn.jsdelivr.net"></script>
+    <script defer src="https://cdn.jsdelivr.net"></script>
 
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; min-height: 100vh; color: #1c1c1e; }
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f2f2f7; margin: 0; min-height: 100vh; }
         #menu, #game { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
         .card { width: 100%; height: 55vh; background: white; border-radius: 25px; margin: 20px 0; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); cursor: pointer; overflow-y: auto; font-size: 1.15rem; line-height: 1.6; box-sizing: border-box; }
         .controls { display: flex; gap: 12px; width: 100%; margin-bottom: 12px; }
@@ -21,7 +21,6 @@
         .btn-gray { background: #8e8e93; width: auto; align-self: flex-start; padding: 10px 20px; margin-bottom: 15px; }
         .deck-btn { background: white; color: #007aff; border: 1.5px solid #007aff; margin-bottom: 12px; width: 100%; text-align: left; padding-left: 20px; }
         #status { font-size: 0.85rem; color: #8e8e93; font-weight: 500; margin-bottom: 5px; }
-        #loader { font-size: 0.9rem; color: #007aff; margin: 20px; }
     </style>
 </head>
 <body>
@@ -50,106 +49,75 @@
             const list = document.getElementById('deck-list');
             const loader = document.getElementById('loader');
             const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
-            
             if (cachedDecks) { renderDeckButtons(cachedDecks); loader.style.display = "none"; }
-
             try {
                 const response = await fetch('decks.json?t=' + Date.now());
-                if (!response.ok) throw new Error();
                 const decks = await response.json();
                 localStorage.setItem('deck_list_cache', JSON.stringify(decks));
                 renderDeckButtons(decks);
                 loader.style.display = "none";
-            } catch (e) {
-                if (!cachedDecks) loader.innerText = "Fehler: decks.json nicht gefunden.";
-            }
+            } catch (e) { if (!cachedDecks) loader.innerText = "Fehler: decks.json nicht gefunden."; }
         }
 
         function renderDeckButtons(decks) {
-            const list = document.getElementById('deck-list');
-            list.innerHTML = "";
+            const list = document.getElementById('deck-list'); list.innerHTML = "";
             decks.forEach(id => {
-                const btn = document.createElement('button');
-                btn.className = "deck-btn";
+                const btn = document.createElement('button'); btn.className = "deck-btn";
                 btn.innerText = id.replace('cards_', '').replace(/_/g, ' ').toUpperCase();
-                btn.onclick = () => selectDeck(id);
-                list.appendChild(btn);
+                btn.onclick = () => selectDeck(id); list.appendChild(btn);
             });
         }
 
-function selectDeck(id) {
-    currentDeckId = id;
-    
-    // Altes Skript entfernen, falls vorhanden (sauberer Reload)
-    const oldScript = document.getElementById('deck-script');
-    if (oldScript) oldScript.remove();
-
-    const script = document.createElement('script');
-    script.id = 'deck-script';
-    script.src = `${id}.js?t=` + Date.now(); // Cache-Busting
-    
-    script.onload = () => {
-        const rawData = window[id]; 
-        
-        if (!rawData) {
-            alert(`Fehler: In der Datei ${id}.js wurde keine Variable namens "${id}" gefunden!`);
-            return;
+        function selectDeck(id) {
+            currentDeckId = id;
+            const script = document.createElement('script');
+            script.src = `${id}.js?t=` + Date.now();
+            script.onload = () => {
+                const rawData = window[id];
+                // WICHTIG: Wir laden nur aus LocalStorage, wenn Daten da sind, sonst IMMER rawData (frische Backslashes!)
+                allCards = JSON.parse(localStorage.getItem('flash_' + id)) || rawData;
+                document.getElementById('menu').style.display = 'none';
+                document.getElementById('game').style.display = 'flex';
+                currentQueue = [...allCards]; index = 0; showAnswer = false; render();
+            };
+            document.head.appendChild(script);
         }
-
-        const savedData = JSON.parse(localStorage.getItem('flash_' + id));
-        allCards = savedData || rawData;
-        
-        document.getElementById('menu').style.display = 'none';
-        document.getElementById('game').style.display = 'flex';
-        currentQueue = [...allCards];
-        index = 0; 
-        showAnswer = false; 
-        render();
-    };
-
-    script.onerror = () => {
-        alert(`Datei ${id}.js konnte nicht geladen werden. Prüfe den Dateinamen auf GitHub!`);
-    };
-
-    document.head.appendChild(script);
-}
-
 
         function render() {
             const cardEl = document.getElementById('card');
             const statusEl = document.getElementById('status');
-            if (currentQueue.length === 0) { cardEl.innerHTML = "<center><br>Keine Karten!</center>"; return; }
+            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten!"; return; }
+            
             const card = currentQueue[index];
             cardEl.innerHTML = showAnswer ? card.a : card.q;
             statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
 
+            // KaTeX Render-Befehl
             if (window.renderMathInElement) {
                 renderMathInElement(cardEl, {
-                    delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}],
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ],
                     throwOnError: false
                 });
             }
         }
 
         function markCard(correct) {
-            if (currentQueue.length === 0) return;
             allCards.find(c => c.q === currentQueue[index].q).needsReview = !correct;
             localStorage.setItem('flash_' + currentDeckId, JSON.stringify(allCards));
             nextCard();
         }
-
         function toggleReviewMode() {
             reviewMode = !reviewMode;
             document.getElementById('filterBtn').innerText = reviewMode ? "Alle anzeigen" : "Nur Falsche üben";
             currentQueue = reviewMode ? allCards.filter(c => c.needsReview) : [...allCards];
             index = 0; showAnswer = false; render();
         }
-
         function nextCard() { index = (currentQueue.length > 0) ? (index + 1) % currentQueue.length : 0; showAnswer = false; render(); }
         function backToMenu() { document.getElementById('menu').style.display = 'flex'; document.getElementById('game').style.display = 'none'; loadMenu(); }
-
         document.getElementById('card').onclick = () => { showAnswer = !showAnswer; render(); };
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
         window.onload = loadMenu;
     </script>
 </body>
