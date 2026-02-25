@@ -27,4 +27,10 @@ window.cards_1_grenzwerte = [
         q: "Nenne das Wurzelkriterium für eine Reihe $\\sum a_n$.", 
         a: "Gilt $\\limsup_{n \\to \\infty} \\sqrt[n]{|a_n|} = L$, dann ist die Reihe:<br>1. absolut konvergent, falls $L < 1$.<br>2. divergent, falls $L > 1$." 
     }
-];
+].map(card => {
+    // Dieser kleine Trick verdoppelt alle Backslashes automatisch, 
+    // falls man sie beim Tippen vergessen hat:
+    card.q = card.q.replace(/\\/g, '\\\\');
+    card.a = card.a.replace(/\\/g, '\\\\');
+    return card;
+});
