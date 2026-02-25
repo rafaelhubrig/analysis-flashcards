@@ -83,26 +83,35 @@
             document.head.appendChild(script);
         }
 
-        function render() {
-            const cardEl = document.getElementById('card');
-            const statusEl = document.getElementById('status');
-            if (currentQueue.length === 0) { cardEl.innerHTML = "Keine Karten!"; return; }
-            
-            const card = currentQueue[index];
-            cardEl.innerHTML = showAnswer ? card.a : card.q;
-            statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
+function render() {
+    const cardEl = document.getElementById('card');
+    const statusEl = document.getElementById('status');
+    if (!currentQueue || currentQueue.length === 0) { 
+        cardEl.innerHTML = "Keine Karten!"; 
+        return; 
+    }
+    
+    const card = currentQueue[index];
+    // Wir setzen den Text
+    cardEl.innerHTML = showAnswer ? card.a : card.q;
+    statusEl.innerText = (reviewMode ? "WIEDERHOLUNG" : "ALLE") + ` (${index + 1}/${currentQueue.length})`;
 
-            // KaTeX Render-Befehl
-            if (window.renderMathInElement) {
-                renderMathInElement(cardEl, {
-                    delimiters: [
-                        {left: "$$", right: "$$", display: true},
-                        {left: "$", right: "$", display: false}
-                    ],
-                    throwOnError: false
-                });
-            }
+    // HOLZHAMMER: Wir warten 50ms, bis der Text sicher im DOM ist
+    setTimeout(() => {
+        if (window.renderMathInElement) {
+            renderMathInElement(cardEl, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false,
+                trust: true
+            });
+        } else {
+            console.error("KaTeX wurde nicht geladen!");
         }
+    }, 50);
+}
 
         function markCard(correct) {
             allCards.find(c => c.q === currentQueue[index].q).needsReview = !correct;
