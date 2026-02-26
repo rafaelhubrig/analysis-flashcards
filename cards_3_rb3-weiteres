@@ -1,0 +1,742 @@
+window.rb3-weiteres = [
+
+/* -----------------------------------------------------------
+   Zusatz 1 – Stetigkeit und Kompaktheit
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Ist $X$ kompakt und $f:X\\to\\mathbb{R}$ stetig, so ist $f(X)$ kompakt.",
+  a: `
+1. Stetige Bilder kompakter Mengen sind kompakt.
+2. Dies gilt in jedem metrischen Raum.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 2 – Gleichmäßige Stetigkeit auf kompakten Mengen
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Jede stetige Funktion auf einem kompakten Intervall ist gleichmäßig stetig.",
+  a: `
+1. Heine–Cantor: Stetig + kompakt ⇒ gleichmäßig stetig.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 3 – Ableitung beschränkt ⇒ Funktion Lipschitz
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Ist $f$ differenzierbar und $f'$ beschränkt, so ist $f$ Lipschitz-stetig.",
+  a: `
+1. Mittelwertsatz: $|f(x)-f(y)| = |f'(c)||x-y|$.
+2. Wenn $|f'(c)|\\le M$, dann $|f(x)-f(y)|\\le M|x-y|$.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 4 – Ableitung existiert ⇒ Funktion stetig
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f$ in $x_0$ differenzierbar ist, dann ist $f$ in $x_0$ stetig.",
+  a: `
+1. Differenzierbarkeit ist stärker als Stetigkeit.
+2. Jede differenzierbare Funktion ist automatisch stetig.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 5 – Stetigkeit der Ableitung
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f'$ existiert, dann ist $f'$ automatisch stetig.",
+  a: `
+1. Gegenbeispiel: $f(x)=x^2\\sin(1/x)$ für $x\\neq 0$, $f(0)=0$.
+2. $f'$ existiert überall, ist aber nicht stetig in $0$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 6 – Monotonie und Ableitung
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f'(x)>0$ für alle $x$, dann ist $f$ streng monoton steigend.",
+  a: `
+1. Mittelwertsatz: $f(y)-f(x)=f'(c)(y-x)$.
+2. Wenn $f'(c)>0$, dann $f(y)>f(x)$ für $y>x$.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 7 – Monotonie ohne Ableitung
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f$ streng monoton ist, dann existiert $f'$ überall.",
+  a: `
+1. Monotonie garantiert nur Existenz einseitiger Ableitungen.
+2. Beispiel: $f(x)=|x|$ ist monoton, aber nicht differenzierbar in $0$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 8 – Komplexe Exponentialfunktion
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Die komplexe Exponentialfunktion ist beschränkt.",
+  a: `
+1. $|e^z| = e^{\\mathrm{Re}(z)}$.
+2. Für $\\mathrm{Re}(z)\\to\\infty$ wächst $e^z$ unbeschränkt.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 9 – Komplexe Kosinusfunktion
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Die komplexe Kosinusfunktion $\\cos z$ ist beschränkt.",
+  a: `
+1. $\\cos(iy)=\\cosh(y)$.
+2. $\\cosh(y)\\to\\infty$ für $y\\to\\infty$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 10 – Potenzreihen: Randpunkte
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Eine Potenzreihe konvergiert immer auf dem Rand ihres Konvergenzkreises.",
+  a: `
+1. Randpunkte müssen einzeln untersucht werden.
+2. Beispiel: $\\sum z^n$ divergiert für $|z|=1$ außer bei $z=1$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 11 – Potenzreihen: Gleichmäßige Konvergenz
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Eine Potenzreihe konvergiert auf jedem kompakten Teil des offenen Konvergenzbereichs gleichmäßig.",
+  a: `
+1. Standardresultat: Gleichmäßige Konvergenz auf kompakten Teilmengen.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 12 – Extremum ⇒ Ableitung = 0
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Hat $f$ ein lokales Extremum und ist differenzierbar, so gilt $f'(x_0)=0$.",
+  a: `
+1. Notwendige Bedingung für Extremum bei Differenzierbarkeit.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 13 – Symmetrischer Differenzenquotient
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Existiert der symmetrische Differenzenquotient, so ist $f$ differenzierbar.",
+  a: `
+1. Gegenbeispiel: $f(x)=|x|$.
+2. Symmetrischer Quotient existiert (=0), aber keine Ableitung.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 14 – Lipschitz ⇒ Differenzierbar
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Jede Lipschitz-stetige Funktion ist differenzierbar.",
+  a: `
+1. Lipschitz ⇒ absolut stetig, aber nicht zwingend differenzierbar.
+2. Beispiel: $f(x)=|x|$ ist Lipschitz, aber nicht differenzierbar in $0$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 15 – Gleichmäßige Konvergenz ⇒ Stetigkeit
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f_n$ gleichmäßig gegen $f$ konvergiert und alle $f_n$ stetig sind, dann ist $f$ stetig.",
+  a: `
+1. Gleichmäßige Konvergenz erhält Stetigkeit.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   a) Zusammenhang <-> stetige Abbildungen in {0,1}
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Ein metrischer Raum $(X,d)$ ist genau dann zusammenhängend, wenn jede stetige Abbildung $f:X\\to\\{0,1\\}$ konstant ist.",
+  a: `
+1. Eine stetige Abbildung in einen diskreten Raum kann nur konstant sein, wenn $X$ zusammenhängend ist.
+2. Umgekehrt: Ist $X$ nicht zusammenhängend, existiert eine nichtkonstante stetige Abbildung in $\\{0,1\\}$.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   b) Jede lineare Abbildung R^n -> R^m ist stetig
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Jede lineare Abbildung $f:\\mathbb{R}^n\\to\\mathbb{R}^m$ ist stetig.",
+  a: `
+1. Lineare Abbildungen zwischen endlichdimensionalen Räumen sind durch Matrizen gegeben.
+2. Alle Normen sind äquivalent.
+3. Jede lineare Abbildung ist Lipschitz-stetig.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   c) Keine stetige f:R->R mit kompaktem Bild
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Es gibt keine stetige Abbildung $f:\\mathbb{R}\\to\\mathbb{R}$ mit kompaktem Bild.",
+  a: `
+1. Beispiel: $f(x)=\\arctan(x)$ hat Bild $(-\\pi/2,\\pi/2)$.
+2. Dieses Bild ist beschränkt, aber nicht abgeschlossen.
+3. Beispiel: $f(x)=\\frac{x}{1+x^2}$ hat Bild $[-1/2,1/2]$, das ist kompakt.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   d) Minimum + Maximum ⇒ Bild kompakt
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Nimmt eine stetige Funktion $f:\\mathbb{R}\\to\\mathbb{R}$ Minimum und Maximum an, so ist $f(\\mathbb{R})$ kompakt.",
+  a: `
+1. Kompaktheit in $\\mathbb{R}$ bedeutet: abgeschlossen und beschränkt.
+2. Wenn $f$ Min und Max annimmt, ist das Bild ein abgeschlossenes Intervall.
+3. Dieses Intervall ist beschränkt.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   e) Punktweise Grenzfunktion stetig auf kompaktem X
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $(X,d)$ kompakt ist und $(f_n)$ punktweise konvergiert mit stetigen $f_n$, dann ist die Grenzfunktion stetig.",
+  a: `
+1. Punktweise Konvergenz reicht nicht aus.
+2. Gegenbeispiel: $f_n(x)=x^n$ auf $[0,1]$.
+3. Grenzfunktion ist unstetig.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   f) Jede beschränkte Funktion hat endlichen Abstand zu einer stetigen
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Jede beschränkte Funktion $f:\\mathbb{R}\\to\\mathbb{R}$ hat endlichen Abstand zu einer stetigen Funktion.",
+  a: `
+1. „Endlicher Abstand“ bedeutet: $\\sup_x |f(x)-g(x)|<\\infty$.
+2. Wähle $g(x)=0$.
+3. Dann ist Abstand = $\\sup |f(x)|$, endlich wegen Beschränktheit.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   g) Komplexe Sinusfunktion ist beschränkt
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Die komplexe Sinusfunktion $\\sin:\\mathbb{C}\\to\\mathbb{C}$ ist beschränkt.",
+  a: `
+1. Für komplexe Argumente wächst $\\sin(z)$ exponentiell.
+2. Beispiel: $\\sin(iy)=i\\sinh(y)$, und $\\sinh(y)\\to\\infty$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   h) exp(z) != 0 für alle z
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Die Exponentialfunktion erfüllt $\\exp(z)\\neq 0$ für alle $z\\in\\mathbb{C}$.",
+  a: `
+1. $e^z$ ist niemals 0.
+2. Bild der Exponentialfunktion ist $\\mathbb{C}\\setminus\\{0\\}$.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   i) Potenzreihe konvergiert im Inneren absolut
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Eine Potenzreihe konvergiert im Inneren ihres Konvergenzkreises absolut.",
+  a: `
+1. Standardresultat der Funktionentheorie.
+2. Für $|z-z_0|<R$ gilt absolute Konvergenz.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   j) Potenzreihe ist unendlich oft differenzierbar im Inneren
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Eine Potenzreihe mit positivem Konvergenzradius ist im Inneren unendlich oft differenzierbar.",
+  a: `
+1. Potenzreihen sind analytisch.
+2. Ableitungen entstehen durch gliedweise Differentiation.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   k) Differenzierbarkeit <-> lineare Approximation
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? $f$ ist in $x_0$ differenzierbar genau dann, wenn eine lineare Funktion $h(x)=a(x-x_0)+f(x_0)$ existiert mit $\\lim_{x\\to x_0}(f(x)-h(x))=0$.",
+  a: `
+1. Dies ist die Definition der Differenzierbarkeit.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   l) Ableitung ist automatisch stetig
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Ist $f$ differenzierbar, so ist $f'$ stetig.",
+  a: `
+1. Differenzierbarkeit impliziert nicht Stetigkeit der Ableitung.
+2. Gegenbeispiel: $f(x)=x^2\\sin(1/x)$.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   m) k Nullstellen ⇒ f' hat k-1 Nullstellen
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Hat $f$ auf $[a,b]$ mindestens $k$ Nullstellen, so hat $f'$ mindestens $k-1$ Nullstellen.",
+  a: `
+1. Zwischen je zwei Nullstellen liegt nach dem Mittelwertsatz eine Nullstelle von $f'$.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   n) f' beschränkt ⇒ f gleichmäßig stetig
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Ist $f$ differenzierbar und $f'$ beschränkt, so ist $f$ gleichmäßig stetig.",
+  a: `
+1. Beschränkte Ableitung ⇒ Lipschitz-Stetigkeit.
+2. Lipschitz ⇒ gleichmäßig stetig.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   o) Lokales Extremum ⇒ Ableitung = 0
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Hat $f$ in $x_0$ ein lokales Extremum, so ist $f$ dort differenzierbar mit $f'(x_0)=0$.",
+  a: `
+1. Extremum ⇒ notwendige Bedingung: Ableitung = 0.
+2. Aber: Differenzierbarkeit ist nicht garantiert.
+3. Beispiel: $f(x)=|x|$ hat Minimum bei 0, aber keine Ableitung.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   p) Symmetrischer Differenzenquotient = Ableitung
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Wenn $f$ in $x_0$ differenzierbar ist, gilt $$\\lim_{h\\to 0}\\frac{f(x_0+h)-f(x_0-h)}{2h}=f'(x_0).$$",
+  a: `
+1. Symmetrischer Differenzenquotient konvergiert zur Ableitung.
+**Antwort: Wahr.**
+`
+},
+
+/* -----------------------------------------------------------
+   q) Existenz des symmetrischen Grenzwerts ⇒ Differenzierbarkeit
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Existiert der symmetrische Grenzwert $$\\lim_{h\\to 0}\\frac{f(x_0+h)-f(x_0-h)}{2h}$$, so ist $f$ in $x_0$ differenzierbar.",
+  a: `
+1. Gegenbeispiel: $f(x)=|x|$.
+2. Symmetrischer Grenzwert existiert (=0), aber $f$ ist nicht differenzierbar.
+**Antwort: Falsch.**
+`
+},
+
+/* -----------------------------------------------------------
+   r) |f(y)-f(x)| <= |y-x|^2 ⇒ f konstant
+----------------------------------------------------------- */
+{
+  q: "Ist die Aussage wahr? Gilt für alle $x,y$ die Ungleichung $|f(y)-f(x)|\\le |y-x|^2$, so ist $f$ konstant.",
+  a: `
+1. Für $y\\to x$: $|f(y)-f(x)|/|y-x| \\to 0$.
+2. Ableitung überall = 0.
+3. Funktion mit Ableitung 0 ist konstant.
+**Antwort: Wahr.**
+`
+},
+
+
+/* -----------------------------------------------------------
+   Zusatz 1 – Gleichmäßige Stetigkeit auf beschränkten Mengen
+----------------------------------------------------------- */
+{
+  q: "Ist $f(x)=x^2$ auf $[-10,10]$ gleichmäßig stetig?",
+  a: `
+1. Auf kompakten Mengen sind alle stetigen Funktionen gleichmäßig stetig.
+2. $f$ ist stetig auf ganz $\\mathbb{R}$.
+3. Intervall $[-10,10]$ ist kompakt.
+**Antwort: Ja.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 2 – Gleichmäßige Stetigkeit vs. Lipschitz
+----------------------------------------------------------- */
+{
+  q: "Ist $f(x)=\\sqrt{x}$ auf $(0,\\infty)$ gleichmäßig stetig?",
+  a: `
+1. Ableitung: $f'(x)=1/(2\\sqrt{x})$.
+2. Diese wird unbeschränkt, wenn $x\\to 0$.
+3. Keine Lipschitz-Stetigkeit.
+4. Aber: Für große $x$ wird $f$ flacher.
+5. Gegenbeispiel: $|\\sqrt{x}-\\sqrt{y}|$ kann beliebig groß werden bei kleinem Abstand.
+**Antwort: Nein.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 3 – Konvergenzfolge: f_n(x)=x/(n+x)
+----------------------------------------------------------- */
+{
+  q: "Konvergiert $f_n(x)=\\frac{x}{n+x}$ gleichmäßig auf $[0,\\infty)$?",
+  a: `
+1. Für jedes feste $x$: $f_n(x)\\to 0$.
+2. Supremum: $\\sup_{x\\ge 0} \\frac{x}{n+x} = 1$ (bei $x\\to\\infty$).
+3. Supremum geht nicht gegen 0.
+**Antwort: Nein.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 4 – Konvergenzfolge: f_n(x)=x^n
+----------------------------------------------------------- */
+{
+  q: "Konvergiert $f_n(x)=x^n$ gleichmäßig auf $[0,1]$?",
+  a: `
+1. Punktweise: $x^n\\to 0$ für $x<1$, aber $1^n=1$.
+2. Grenzfunktion ist unstetig.
+3. Gleichmäßige Konvergenz würde Stetigkeit erhalten.
+**Antwort: Nein.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 5 – Fehleranalyse l'Hospital
+----------------------------------------------------------- */
+{
+  q: "Warum ist l'Hospital bei $\\frac{|x|}{x}$ nicht anwendbar?",
+  a: `
+1. Ausdruck ist für $x\\to 0$ nicht definiert.
+2. l'Hospital verlangt differenzierbare Funktionen in einer Umgebung.
+3. $|x|$ ist bei 0 nicht differenzierbar.
+**Antwort: l'Hospital unzulässig.**
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 6 – Taylorentwicklung: sin(x^2)
+----------------------------------------------------------- */
+{
+  q: "Bestimme die Taylorentwicklung von $\\sin(x^2)$ bis Ordnung $x^6$.",
+  a: `
+1. Taylor von $\\sin u$: $u - u^3/6 + u^5/120 + ...$.
+2. Setze $u=x^2$ ein:
+   - $u = x^2$
+   - $u^3 = x^6$
+3. Bis Ordnung 6:
+   $$\\sin(x^2) = x^2 - \\frac{x^6}{6} + O(x^{10}).$$
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 7 – Taylorentwicklung: e^{x}cos(x)
+----------------------------------------------------------- */
+{
+  q: "Bestimme die Taylorentwicklung von $e^x\\cos x$ bis Ordnung $x^4$.",
+  a: `
+1. $e^x = 1 + x + x^2/2 + x^3/6 + x^4/24 + ...$
+2. $\\cos x = 1 - x^2/2 + x^4/24 + ...$
+3. Multipliziere und sammle Terme:
+   $$e^x\\cos x = 1 + x + 0\\cdot x^2 - \\frac{x^3}{3} + \\frac{x^4}{6} + O(x^5).$$
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 8 – Polynom in neuer Variable
+----------------------------------------------------------- */
+{
+  q: "Schreibe $q(x)=x^4 - 4x^3 + 6x^2 - 4x + 1$ als Polynom in $w=x-1$.",
+  a: `
+1. Erkenne: $q(x)=(x-1)^4$.
+2. Also direkt:
+   $$q(x)=w^4.$$
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 9 – Rekursion für Ableitungen
+----------------------------------------------------------- */
+{
+  q: "Finde eine Rekursion für die Ableitungen von $f(x)=\\frac{1}{1-x}$.",
+  a: `
+1. $f(x)=\\sum_{n=0}^\\infty x^n$.
+2. $f^{(n)}(x)=n!/(1-x)^{n+1}$.
+3. Rekursion:
+   $$f^{(n+1)}(x)=(n+1)\\frac{f^{(n)}(x)}{1-x}.$$
+`
+},
+
+/* -----------------------------------------------------------
+   Zusatz 10 – Extrema: x^4 - 2x^2
+----------------------------------------------------------- */
+{
+  q: "Bestimme die lokalen Extrema von $f(x)=x^4 - 2x^2$.",
+  a: `
+1. Ableitung: $f'(x)=4x^3 - 4x = 4x(x^2-1)$.
+2. Nullstellen: $x=-1,0,1$.
+3. Zweite Ableitung: $f''(x)=12x^2 - 4$.
+4. Klassifikation:
+   - $x=0$: $f''(0)=-4$ ⇒ Maximum.
+   - $x=\\pm 1$: $f''(\\pm 1)=8$ ⇒ Minima.
+`
+},
+
+
+/* -----------------------------------------------------------
+   Aufgabe 2 – Gleichmäßige Stetigkeit
+----------------------------------------------------------- */
+{
+  q: "Ist $f(x,y)=x+y$ gleichmäßig stetig?",
+  a: `
+1. Auf $\\mathbb{R}^2$ gilt: $|f(x,y)-f(x',y')| = |(x-x') + (y-y')|$.
+2. Dreiecksungleichung: $\\le |x-x'| + |y-y'|$.
+3. Das ist $\\le \\sqrt{2}\\,\\|(x,y)-(x',y')\\|$.
+4. Lipschitz ⇒ gleichmäßig stetig.
+**Antwort: Ja.**
+`
+},
+{
+  q: "Ist $g(x,y)=x\\cdot y$ gleichmäßig stetig?",
+  a: `
+1. Auf ganz $\\mathbb{R}^2$ ist $g$ nicht beschränkt.
+2. Betrachte Punkte $(n,n)$ und $(n,n+1/n)$.
+3. Dann: $|g(n,n+1/n)-g(n,n)| = |n^2 + 1 - n^2| = 1$.
+4. Aber Abstand der Punkte: $\\to 0$.
+5. Kein $\\delta$ für alle $\\varepsilon$ möglich.
+**Antwort: Nein.**
+`
+},
+{
+  q: "Ist $h(x)=|x|$ gleichmäßig stetig?",
+  a: `
+1. $|h(x)-h(y)| = ||x|-|y|| \\le |x-y|$.
+2. Lipschitz mit Konstante 1.
+**Antwort: Ja.**
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 4 – Konvergenz der Folge f_n(x)=sin(x/n)
+----------------------------------------------------------- */
+{
+  q: "Konvergiert $f_n(x)=\\sin(x/n)$ punktweise auf $\\mathbb{R}$?",
+  a: `
+1. Für jedes feste $x$: $x/n \\to 0$.
+2. Also $\\sin(x/n) \\to 0$.
+**Antwort: Ja, Grenzfunktion $f(x)=0$.**
+`
+},
+{
+  q: "Konvergiert $f_n$ gleichmäßig auf kompakten Mengen?",
+  a: `
+1. Auf kompaktem $K$: $|x| \\le M$.
+2. $|\\sin(x/n)| \\le |x|/n \\le M/n$.
+3. $M/n \\to 0$ gleichmäßig.
+**Antwort: Ja.**
+`
+},
+{
+  q: "Konvergiert $f_n$ gleichmäßig auf ganz $\\mathbb{R}$?",
+  a: `
+1. $|\\sin(x/n)| \\le |x|/n$.
+2. Für $x=n$: $|\\sin(1)|$ bleibt konstant.
+3. Supremum über $\\mathbb{R}$ geht nicht gegen 0.
+**Antwort: Nein.**
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 6 – Fehler bei l’Hospital
+----------------------------------------------------------- */
+{
+  q: "Wo liegt der Fehler in der falschen Anwendung von l'Hospital?",
+  a: `
+1. Der Ausdruck ist: $\\frac{x^3 + x^2 - x - 1}{x^2 - 1}$.
+2. Bei $x=1$ ist der Zähler: $1+1-1-1=0$, Nenner: $1-1=0$.
+3. l'Hospital darf nur angewendet werden, wenn Zähler und Nenner in einer Umgebung differenzierbar sind.
+4. Der Nenner $x^2-1$ hat bei $x=1$ eine Nullstelle, aber ist differenzierbar.
+5. Der Fehler: **Nach der ersten Ableitung entsteht kein $0/0$ mehr**, daher darf man nicht weiter ableiten.
+6. Die zweite Anwendung ist unzulässig.
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 7 – Differentialungleichung
+----------------------------------------------------------- */
+{
+  q: "Warum hat eine Nullstelle von $f$ eine ganze Umgebung, in der $f=0$ gilt?",
+  a: `
+1. Gegeben: $|f'(x)| \\le A|f(x)|$.
+2. Falls $f(x_0)=0$, dann $|f'(x_0)| \\le 0$ ⇒ $f'(x_0)=0$.
+3. Betrachte Lösung der DGL $y'=Ay$ mit Anfangswert 0 ⇒ identisch 0.
+4. Vergleichsargument: $f$ kann nicht von 0 weg wachsen.
+**Folge: f ist in einer Umgebung konstant 0.**
+`
+},
+{
+  q: "Warum ist f genau dann 0, wenn sie eine Nullstelle hat?",
+  a: `
+1. Aus Teil (a): Nullstelle ⇒ Umgebung, in der f=0.
+2. Setze Intervall fort: f kann nie wieder von 0 abweichen.
+3. Also: Eine Nullstelle erzwingt f≡0.
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 8 – Taylorreihe mit maximalem Index
+----------------------------------------------------------- */
+{
+  q: "Wie wählt man a,b so, dass der erste nichtverschwindende Taylor-Koeffizient maximalen Index hat?",
+  a: `
+1. Funktion: $f(x)=x-(a+b\\cos x)\\sin x$.
+2. Entwickle $\\sin x$ und $\\cos x$ bis Ordnung 3.
+3. Setze Koeffizienten der Reihenentwicklung nacheinander = 0.
+4. Bedingungen:
+   - Ordnung 1 verschwindet automatisch.
+   - Ordnung 2 ⇒ Bedingung für a.
+   - Ordnung 3 ⇒ Bedingung für b.
+5. Ergebnis: $a=1$, $b=1/3$.
+6. Erster nichtverschwindender Term: Ordnung 5.
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 9 – Polynom in neuer Variable w=z+1
+----------------------------------------------------------- */
+{
+  q: "Schreibe $p(z)=1+3z+5z^2-2z^3$ als Polynom in $w=z+1$.",
+  a: `
+1. Setze $z=w-1$ ein.
+2. Berechne $p(w-1)$ vollständig aus.
+3. Ergebnis:
+   $$p(w-1) = -2w^3 + 11w^2 - 15w + 7.$$
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 10 – Größtes n für endlichen Grenzwert
+----------------------------------------------------------- */
+{
+  q: "Bestimme größtes n für $\\lim_{x\\to 0} \\frac{(1+x)^x - 1}{x^n}$.",
+  a: `
+1. Taylor: $(1+x)^x = e^{x\\ln(1+x)}$.
+2. $x\\ln(1+x) = x(x - x^2/2 + ...)= x^2 - x^3/2 + ...$.
+3. Exponentialentwicklung ⇒ erster nichtverschwindender Term: $x^2$.
+4. Also größtes n = 2.
+`
+},
+{
+  q: "Bestimme größtes n für $\\lim_{x\\to 0} \\frac{\\tan(\\sin x)-\\sin(\\tan x)}{x^n}$.",
+  a: `
+1. Taylor: $\\sin x = x - x^3/6 + ...$, $\\tan x = x + x^3/3 + ...$.
+2. Einsetzen und vergleichen.
+3. Erster nichtverschwindender Term: Ordnung 5.
+4. Also größtes n = 5.
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 11 – Lokale Extrema
+----------------------------------------------------------- */
+{
+  q: "Bestimme die lokalen Extrema von $f_1(x)=x+1/x$.",
+  a: `
+1. Ableitung: $f'(x)=1-1/x^2$.
+2. Nullstelle: $x=\\pm 1$.
+3. Zweite Ableitung: $f''(x)=2/x^3$.
+4. $x=1$: Minimum, $x=-1$: Maximum.
+`
+},
+{
+  q: "Bestimme die lokalen Extrema von $f_2(x)=\\frac{x^2-3x+2}{x^2+2x+1}$.",
+  a: `
+1. Schreibe Nenner als $(x+1)^2$.
+2. Quotientenregel anwenden.
+3. Nullstellen der Ableitung bestimmen.
+4. Klassifikation über Vorzeichenwechsel.
+`
+},
+{
+  q: "Bestimme die lokalen Extrema von $f_3(x)=\\cos x + \\frac12\\cos(2x)$.",
+  a: `
+1. Ableitung: $f'(x)=-\\sin x - \\sin(2x)$.
+2. Nullstellen über trigonometrische Identitäten.
+3. Zweite Ableitung: $f''(x)=-\\cos x - 2\\cos(2x)$.
+4. Klassifikation über Vorzeichen.
+`
+},
+{
+  q: "Bestimme die lokalen Extrema von $f_4(x)=e^x\\sin x$.",
+  a: `
+1. Ableitung: $f'(x)=e^x(\\sin x + \\cos x)$.
+2. Nullstellen: $\\sin x + \\cos x = 0$ ⇒ $x=3\\pi/4 + k\\pi$.
+3. Zweite Ableitung prüfen.
+`
+},
+
+/* -----------------------------------------------------------
+   Aufgabe 12 – 1000-te Ableitung
+----------------------------------------------------------- */
+{
+  q: "Bestimme $f^{(1000)}(0)$ für $f(x)=\\frac{1}{1+x+x^2+x^3}$.",
+  a: `
+1. Schreibe als Potenzreihe: $1/(1+x+x^2+x^3)$.
+2. Verwende Partialbruchzerlegung oder Wurzeln des Polynoms.
+3. Koeffizienten sind linear rekursiv.
+4. 1000-ter Koeffizient ergibt Ableitung:
+   $$f^{(1000)}(0)=1000!\\cdot a_{1000}.$$
+`
+}
+
+];
