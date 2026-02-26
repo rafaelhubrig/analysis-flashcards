@@ -57,23 +57,40 @@
         let allCards = [], currentQueue = [], index = 0, showAnswer = false, reviewMode = false, currentDeckId = "";
 
         async function loadMenu() {
-            const list = document.getElementById('deck-list');
-            const loader = document.getElementById('loader');
-            const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
-            
-            if (cachedDecks) { renderDeckButtons(cachedDecks); loader.style.display = "none"; }
+    const list = document.getElementById('deck-list');
+    const loader = document.getElementById('loader');
+    
+    // 1. SOFORT den Cache laden (funktioniert immer, auch im Flugmodus)
+    const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
+    if (cachedDecks && cachedDecks.length > 0) {
+        renderDeckButtons(cachedDecks);
+        loader.style.display = "none";
+    } else {
+        loader.innerText = "Suche Decks...";
+    }
 
-            try {
-                const response = await fetch('decks.json?t=' + Date.now());
-                if (!response.ok) throw new Error();
-                const decks = await response.json();
-                localStorage.setItem('deck_list_cache', JSON.stringify(decks));
-                renderDeckButtons(decks);
-                loader.style.display = "none";
-            } catch (e) {
-                if (!cachedDecks) loader.innerText = "Fehler: Decks konnten nicht geladen werden.";
-            }
+    // 2. Versuchen, die Liste zu aktualisieren (nur wenn online)
+    try {
+        const response = await fetch('decks.json?t=' + Date.now());
+        if (!response.ok) throw new Error("Offline");
+        
+        const decks = await response.json();
+        
+        // Liste für das nächste Mal speichern
+        localStorage.setItem('deck_list_cache', JSON.stringify(decks));
+        
+        // Menü aktualisieren, falls sich etwas geändert hat
+        renderDeckButtons(decks);
+        loader.style.display = "none";
+    } catch (e) {
+        // Falls offline: Wir tun nichts, da die Buttons oben schon gerendert wurden.
+        console.log("Menü-Update fehlgeschlagen (Offline-Modus aktiv)");
+        if (!cachedDecks) {
+            loader.innerText = "Offline: Bitte einmal mit Internet starten.";
         }
+    }
+}
+
 
         function renderDeckButtons(decks) {
             const list = document.getElementById('deck-list');
