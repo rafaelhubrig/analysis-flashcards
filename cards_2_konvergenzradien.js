@@ -52,7 +52,7 @@ window.cards_2_konvergenzradien = [
     - Die Reihe kann dort divergieren (z.B. geometrische Reihe).
     *Der Rand muss immer separat untersucht werden!*`
 },
-  window.cards_3_konvergenzradien_extra3 = [
+  
 
 /* -----------------------------------------------------------
    C1) Reihe: sum ( n z^n )
