@@ -60,36 +60,45 @@
     const list = document.getElementById('deck-list');
     const loader = document.getElementById('loader');
     
-    // 1. SOFORT den Cache laden (funktioniert immer, auch im Flugmodus)
-    const cachedDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
-    if (cachedDecks && cachedDecks.length > 0) {
-        renderDeckButtons(cachedDecks);
+    // FUNKTION ZUM ZEICHNEN DER BUTTONS
+    const renderButtons = (decks) => {
+        list.innerHTML = "";
+        decks.forEach(id => {
+            const btn = document.createElement('button');
+            btn.className = "deck-btn";
+            btn.innerText = id.replace('cards_', '').replace(/_/g, ' ').toUpperCase();
+            btn.onclick = () => selectDeck(id);
+            list.appendChild(btn);
+        });
         loader.style.display = "none";
-    } else {
-        loader.innerText = "Suche Decks...";
+    };
+
+    // SCHRITT 1: Sofort schauen, ob wir alte Daten im Speicher haben
+    const localDecks = JSON.parse(localStorage.getItem('deck_list_cache'));
+    if (localDecks) {
+        renderButtons(localDecks);
     }
 
-    // 2. Versuchen, die Liste zu aktualisieren (nur wenn online)
+    // SCHRITT 2: Versuchen, die decks.json vom Server zu laden (nur wenn online)
     try {
         const response = await fetch('decks.json?t=' + Date.now());
         if (!response.ok) throw new Error("Offline");
         
-        const decks = await response.json();
+        const freshDecks = await response.json();
         
-        // Liste für das nächste Mal speichern
-        localStorage.setItem('deck_list_cache', JSON.stringify(decks));
+        // Neue Liste speichern für das nächste Mal Offline
+        localStorage.setItem('deck_list_cache', JSON.stringify(freshDecks));
         
-        // Menü aktualisieren, falls sich etwas geändert hat
-        renderDeckButtons(decks);
-        loader.style.display = "none";
+        // Menü mit frischen Daten aktualisieren
+        renderButtons(freshDecks);
     } catch (e) {
-        // Falls offline: Wir tun nichts, da die Buttons oben schon gerendert wurden.
-        console.log("Menü-Update fehlgeschlagen (Offline-Modus aktiv)");
-        if (!cachedDecks) {
+        console.log("Arbeite im Offline-Modus mit Cache-Daten.");
+        if (!localDecks) {
             loader.innerText = "Offline: Bitte einmal mit Internet starten.";
         }
     }
 }
+
 
 
         function renderDeckButtons(decks) {
