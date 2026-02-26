@@ -28,7 +28,7 @@ window.cards_1_grenzwerte = [
         3. Differenz: $x - \\sin x = \\frac{x^3}{6}$
         4. Quotient: $$\\frac{x^3/3}{x^3/6} = 2$$
         **Ergebnis: 2**`
-    }
+    },
 
 {
     q: "Berechne Schritt für Schritt: \\\\(\\lim_{x\\to\\infty} \\frac{x-\\sin x}{x+\\sin x}\\\\)",
