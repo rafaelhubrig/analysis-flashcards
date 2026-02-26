@@ -1,4 +1,4 @@
-window.cards_3_methodik-ana = [
+window.cards_3_methodik1ana = [
 
 /* -----------------------------------------------------------
    1) Wurzelkriterium
