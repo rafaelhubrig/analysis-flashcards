@@ -3,133 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MathCards Pro</title>
+    <title>MathCards Scrollable</title>
     
-    <!-- KaTeX Styles & Scripts -->
-    <link rel="stylesheet" href="lib/katex/katex.min.css">
-    <script src="lib/katex/katex.min.js"></script>
-    <script src="lib/katex/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <script defer src="https://cdn.jsdelivr.net"></script>
+    <script defer src="https://cdn.jsdelivr.net"></script>
 
     <style>
         :root { --bg: #f4f7f9; --card: #ffffff; --primary: #007aff; --text: #1c1c1e; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         #menu-screen { padding: 20px; overflow-y: auto; flex: 1; text-align: center; }
-        #search-bar { width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; outline: none; }
-        .deck-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: none; border-radius: 14px; background: var(--card); color: var(--text); font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; text-align: left; }
+        .deck-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: none; border-radius: 14px; background: var(--card); color: var(--text); font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .stats-badge { font-size: 12px; color: #007aff; background: #e1f0ff; padding: 4px 8px; border-radius: 8px; }
+
+        #card-screen { display: none; flex: 1; flex-direction: column; padding: 20px; box-sizing: border-box; height: 100vh; }
         
-        #card-screen { display: none; flex: 1; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        .card { flex: 1; background: var(--card); border-radius: 24px; display: flex; align-items: center; justify-content: center; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); font-size: 1.15em; text-align: center; overflow-y: auto; position: relative; min-height: 200px; }
-        
+        /* FIX FÜR SCROLLEN: Karte als Container */
+        .card { 
+            flex: 1; 
+            background: var(--card); 
+            border-radius: 24px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; /* Verhindert, dass die Karte selbst ausbricht */
+            position: relative;
+        }
+
+        /* Innerer Scroll-Bereich */
+        #card-content { 
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto; /* Erlaubt vertikales Scrollen */
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start; /* Startet oben, damit Scrollen Sinn ergibt */
+            font-size: 1.15em;
+            text-align: center;
+            -webkit-overflow-scrolling: touch; /* Sanftes Scrollen auf iOS */
+        }
+
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
         .nav-btn { padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; }
         .prev { background: #a2a2a7; }
         .next { background: var(--primary); }
-        .back-btn { margin-bottom: 15px; background: none; border: none; color: var(--primary); font-size: 17px; font-weight: 600; cursor: pointer; }
+        .back-btn { margin-bottom: 10px; background: none; border: none; color: var(--primary); font-size: 17px; font-weight: 600; cursor: pointer; }
         
-        #loader { font-weight: bold; color: #999; margin-top: 40px; }
-        .katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
+        #search-bar { width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; outline: none; }
+        .toggle-container { margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; color: #666; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(18px); }
     </style>
 </head>
 <body>
 
-    <!-- MENÜ -->
     <div id="menu-screen">
         <h1 style="margin-top: 20px;">📚 MathCards</h1>
+        <div class="toggle-container">
+            <span>Zufällig</span>
+            <label class="switch"><input type="checkbox" id="random-toggle"><span class="slider"></span></label>
+        </div>
         <input type="text" id="search-bar" placeholder="Deck suchen..." onkeyup="filterDecks()">
-        <div id="loader">Decks werden geladen...</div>
+        <div id="loader" style="color:#999; font-weight:bold;">Lade...</div>
         <div id="deck-list"></div>
     </div>
 
-    <!-- KARTEN-ANSICHT -->
     <div id="card-screen">
-        <button class="back-btn" onclick="showMenu()">← Menü</button>
+        <button class="back-btn" onclick="finishDeck()">← Menü & Speichern</button>
         <div id="progress" style="font-size: 13px; color: #888; margin-bottom: 8px; text-align: center;"></div>
-        <div class="card" id="flashcard" onclick="flipCard()">
-            <div id="card-content" style="width: 100%;">Lade...</div>
+        <div class="card" onclick="flipCard()">
+            <!-- Dieser Bereich ist nun scrollbar -->
+            <div id="card-content">Lade...</div>
         </div>
         <div class="controls">
-            <button class="nav-btn prev" onclick="prevCard()">Zurück</button>
-            <button class="nav-btn next" onclick="nextCard()">Nächste</button>
+            <button class="nav-btn prev" onclick="prevCard(event)">Zurück</button>
+            <button class="nav-btn next" onclick="nextCard(event)">Nächste</button>
         </div>
     </div>
 
     <script>
-        let allDecks = {}; 
-        let currentDeck = [];
-        let currentIndex = 0;
-        let isFront = true;
+        let allDecks = {}; let currentDeck = []; let currentIndex = 0; let isFront = true;
+        let activeDeckId = ""; let maxVisitedIndex = 0;
+
+        function shuffle(array) {
+            let cur = array.length, rand;
+            while (cur != 0) { rand = Math.floor(Math.random() * cur); cur--; [array[cur], array[rand]] = [array[rand], array[cur]]; }
+            return array;
+        }
 
         async function initializeApp() {
-            const loader = document.getElementById('loader');
-
             try {
-                // 1. Liste der Decks vom Server holen
                 const response = await fetch('decks.json?t=' + Date.now());
-                const deckNames = await response.json();
-                localStorage.setItem('deck_names_cache', JSON.stringify(deckNames));
-
-                // 2. Jedes Deck einzeln laden und im Speicher halten
-                for (const name of deckNames) {
-                    try {
-                        const res = await fetch(`${name}.js?t=${Date.now()}`);
-                        const scriptText = await res.text();
-                        
-                        // Script direkt in den Head injizieren (erhält Backslashes perfekt)
-                        const scriptElement = document.createElement('script');
-                        scriptElement.text = scriptText;
-                        document.head.appendChild(scriptElement);
-                        document.head.removeChild(scriptElement);
-                        
-                        if (window[name]) {
-                            allDecks[name] = window[name];
-                        }
-                    } catch (err) { console.error("Fehler beim Laden von:", name); }
+                const names = await response.json();
+                localStorage.setItem('deck_names_cache', JSON.stringify(names));
+                for (const n of names) {
+                    const res = await fetch(`${n}.js?t=${Date.now()}`);
+                    const txt = await res.text();
+                    const el = document.createElement('script'); el.text = txt;
+                    document.head.appendChild(el); document.head.removeChild(el);
+                    if (window[n]) allDecks[n] = window[n];
                 }
-
-                // Backup für Offline-Start
                 localStorage.setItem('all_decks_content', JSON.stringify(allDecks));
-                renderMenu(deckNames);
-
+                renderMenu(names);
             } catch (e) {
-                // Offline Fallback
-                const cachedNames = JSON.parse(localStorage.getItem('deck_names_cache'));
-                const cachedContent = JSON.parse(localStorage.getItem('all_decks_content'));
-                
-                if (cachedNames && cachedContent) {
-                    allDecks = cachedContent;
-                    renderMenu(cachedNames);
-                } else {
-                    loader.innerText = "Offline: Bitte einmal mit Internet starten!";
-                }
+                const cn = JSON.parse(localStorage.getItem('deck_names_cache'));
+                const cc = JSON.parse(localStorage.getItem('all_decks_content'));
+                if (cn) { allDecks = cc; renderMenu(cn); }
             }
         }
 
-        function renderMenu(deckNames) {
-            const list = document.getElementById('deck-list');
-            const loader = document.getElementById('loader');
-            list.innerHTML = "";
-            
-            deckNames.forEach(id => {
-                const btn = document.createElement('button');
-                btn.className = "deck-btn";
-                // Verschönert den Anzeigenamen
+        function renderMenu(names) {
+            const list = document.getElementById('deck-list'); list.innerHTML = "";
+            const stats = JSON.parse(localStorage.getItem('deck_stats') || "{}");
+            names.forEach(id => {
+                const btn = document.createElement('button'); btn.className = "deck-btn";
                 const display = id.split('_').slice(2).join(' ').toUpperCase() || id.toUpperCase();
-                btn.innerText = "📖 " + display;
-                btn.onclick = () => startDeck(id);
-                list.appendChild(btn);
+                const score = stats[id] || 0; const total = allDecks[id] ? allDecks[id].length : "?";
+                btn.innerHTML = `<span>📖 ${display}</span> <span class="stats-badge">${score}/${total}</span>`;
+                btn.onclick = () => startDeck(id); list.appendChild(btn);
             });
-            loader.style.display = "none";
+            document.getElementById('loader').style.display = "none";
         }
 
         function startDeck(id) {
-            currentDeck = allDecks[id];
-            if (!currentDeck) return;
-            currentIndex = 0;
-            isFront = true;
+            activeDeckId = id; currentDeck = [...allDecks[id]];
+            if (document.getElementById('random-toggle').checked) shuffle(currentDeck);
+            currentIndex = 0; maxVisitedIndex = 0; isFront = true;
             document.getElementById('menu-screen').style.display = 'none';
             document.getElementById('card-screen').style.display = 'flex';
             showCard();
+        }
+
+        function finishDeck() {
+            const stats = JSON.parse(localStorage.getItem('deck_stats') || "{}");
+            if (!document.getElementById('random-toggle').checked) {
+                if (!stats[activeDeckId] || (maxVisitedIndex + 1) > stats[activeDeckId]) {
+                    stats[activeDeckId] = maxVisitedIndex + 1;
+                    localStorage.setItem('deck_stats', JSON.stringify(stats));
+                }
+            }
+            renderMenu(JSON.parse(localStorage.getItem('deck_names_cache')));
+            showMenu();
         }
 
         function showMenu() {
@@ -139,42 +159,37 @@
 
         function showCard() {
             const content = document.getElementById('card-content');
-            const progress = document.getElementById('progress');
-            const data = currentDeck[currentIndex];
+            content.innerHTML = isFront ? currentDeck[currentIndex].q : currentDeck[currentIndex].a;
+            document.getElementById('progress').innerText = `Karte ${currentIndex + 1} von ${currentDeck.length}`;
+            if (currentIndex > maxVisitedIndex) maxVisitedIndex = currentIndex;
             
-            // Inhalt setzen
-            content.innerHTML = isFront ? data.q : data.a;
-            progress.innerText = `Karte ${currentIndex + 1} von ${currentDeck.length}`;
-            
-            // KaTeX Rendering (mit allen möglichen Delimitern)
-            renderMathInElement(content, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false},
-                    {left: "\\(", right: "\\)", display: false},
-                    {left: "\\[", right: "\\]", display: true},
-                    {left: "\\\\(", right: "\\\\)", display: false},
-                    {left: "\\\\[", right: "\\\\]", display: true}
-                ],
-                throwOnError: false
-            });
-            
+            // WICHTIG: Setzt den Scrollbalken bei jeder neuen Karte nach oben
             content.scrollTop = 0;
+
+            setTimeout(() => {
+                if (typeof renderMathInElement === 'function') {
+                    renderMathInElement(content, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}
+                        ], throwOnError: false
+                    });
+                }
+            }, 10);
         }
 
         function flipCard() { isFront = !isFront; showCard(); }
-        function nextCard() { if (currentIndex < currentDeck.length - 1) { currentIndex++; isFront = true; showCard(); } }
-        function prevCard() { if (currentIndex > 0) { currentIndex--; isFront = true; showCard(); } }
+        
+        // Event.stopPropagation verhindert, dass beim Navigieren die Karte geflippt wird
+        function nextCard(e) { e.stopPropagation(); if (currentIndex < currentDeck.length - 1) { currentIndex++; isFront = true; showCard(); } }
+        function prevCard(e) { e.stopPropagation(); if (currentIndex > 0) { currentIndex--; isFront = true; showCard(); } }
         
         function filterDecks() {
             const q = document.getElementById('search-bar').value.toLowerCase();
-            document.querySelectorAll('.deck-btn').forEach(b => {
-                b.style.display = b.innerText.toLowerCase().includes(q) ? "block" : "none";
-            });
+            document.querySelectorAll('.deck-btn').forEach(b => b.style.display = b.innerText.toLowerCase().includes(q) ? "flex" : "none");
         }
 
         window.onload = initializeApp;
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
