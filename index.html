@@ -11,43 +11,40 @@
     <script src="lib/auto-render.min.js"></script>
 
     <style>
-        :root { --bg: #f0f2f5; --card: #ffffff; --primary: #007aff; --text: #1c1c1e; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        :root { --bg: #f4f7f9; --card: #ffffff; --primary: #007aff; --text: #1c1c1e; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Menü Screen */
         #menu-screen { padding: 20px; overflow-y: auto; flex: 1; text-align: center; }
-        .deck-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; border-radius: 12px; background: var(--card); color: var(--text); font-size: 16px; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.1s; }
-        .deck-btn:active { transform: scale(0.98); background: #e5e5ea; }
-        #search-bar { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
-
-        /* Card Screen */
-        #card-screen { display: none; flex: 1; flex-direction: column; padding: 20px; position: relative; }
-        .card { flex: 1; background: var(--card); border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 1.2em; text-align: center; overflow-y: auto; cursor: pointer; }
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
-        .nav-btn { padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; }
-        .prev { background: #8e8e93; }
-        .next { background: var(--primary); }
-        .back-btn { margin-bottom: 10px; background: none; border: none; color: var(--primary); font-size: 16px; cursor: pointer; text-align: left; padding: 0; }
+        #search-bar { width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 12px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; outline: none; }
+        .deck-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: none; border-radius: 14px; background: var(--card); color: var(--text); font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; }
         
-        #loader { font-weight: bold; color: #888; margin-top: 50px; }
+        #card-screen { display: none; flex: 1; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        .card { flex: 1; background: var(--card); border-radius: 24px; display: flex; align-items: center; justify-content: center; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); font-size: 1.15em; text-align: center; overflow-y: auto; position: relative; }
+        
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
+        .nav-btn { padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; }
+        .prev { background: #a2a2a7; }
+        .next { background: var(--primary); }
+        .back-btn { margin-bottom: 15px; background: none; border: none; color: var(--primary); font-size: 17px; font-weight: 600; cursor: pointer; }
+        
+        #loader { font-weight: bold; color: #999; margin-top: 40px; }
+        .katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
     </style>
 </head>
 <body>
 
-    <!-- MENÜ SCREEN -->
     <div id="menu-screen">
-        <h1>📚 MathCards</h1>
+        <h1 style="margin-top: 20px;">📚 MathCards</h1>
         <input type="text" id="search-bar" placeholder="Deck suchen..." onkeyup="filterDecks()">
-        <div id="loader">Lade Decks...</div>
+        <div id="loader">Initialisiere App...</div>
         <div id="deck-list"></div>
     </div>
 
-    <!-- CARD SCREEN -->
     <div id="card-screen">
-        <button class="back-btn" onclick="showMenu()">← Zurück zum Menü</button>
-        <div id="progress" style="font-size: 12px; color: #888; margin-bottom: 5px;"></div>
+        <button class="back-btn" onclick="showMenu()">← Menü</button>
+        <div id="progress" style="font-size: 13px; color: #888; margin-bottom: 8px; text-align: center;"></div>
         <div class="card" id="flashcard" onclick="flipCard()">
-            <div id="card-content">Lade...</div>
+            <div id="card-content" style="width: 100%;">Lade...</div>
         </div>
         <div class="controls">
             <button class="nav-btn prev" onclick="prevCard()">Zurück</button>
@@ -62,39 +59,35 @@
         let isFront = true;
 
         async function initializeApp() {
-            const list = document.getElementById('deck-list');
             const loader = document.getElementById('loader');
 
             try {
-                // 1. Decks.json laden
+                // 1. Decks Liste holen
                 const response = await fetch('decks.json?t=' + Date.now());
-                if(!response.ok) throw new Error("Netzwerkfehler");
                 const deckNames = await response.json();
                 localStorage.setItem('deck_names_cache', JSON.stringify(deckNames));
 
-                // 2. Alle Decks parallel laden (Initialisierung)
+                // 2. Jede JS-Datei einzeln laden
                 for (const name of deckNames) {
                     try {
                         const res = await fetch(`${name}.js?t=${Date.now()}`);
                         const scriptText = await res.text();
                         
-                        // Script sicher evaluieren
+                        // Script ausführen: Definiert window.cards_...
                         const tempFn = new Function(scriptText);
                         tempFn();
                         
-                        // window[name] abgreifen (die Datei definiert z.B. window.cards_1_grenzwerte)
                         if (window[name]) {
                             allDecks[name] = window[name];
                         }
-                    } catch (err) { console.error("Fehler beim Laden von:", name); }
+                    } catch (err) { console.error("Fehler bei:", name); }
                 }
 
-                // 3. Im LocalStorage sichern für kompletten Offline-Betrieb
                 localStorage.setItem('all_decks_content', JSON.stringify(allDecks));
                 renderMenu(deckNames);
 
             } catch (e) {
-                // OFFLINE FALLBACK
+                // Offline Fallback aus LocalStorage
                 const cachedNames = JSON.parse(localStorage.getItem('deck_names_cache'));
                 const cachedContent = JSON.parse(localStorage.getItem('all_decks_content'));
                 
@@ -102,7 +95,7 @@
                     allDecks = cachedContent;
                     renderMenu(cachedNames);
                 } else {
-                    loader.innerText = "Offline: Bitte einmal mit Internet starten!";
+                    loader.innerText = "Bitte einmal mit Internet starten!";
                 }
             }
         }
@@ -115,27 +108,17 @@
             deckNames.forEach(id => {
                 const btn = document.createElement('button');
                 btn.className = "deck-btn";
-                // Name verschönern: cards_1_grenzwerte -> GRENZWERTE
-                btn.innerText = id.split('_').pop().replace(/_/g, ' ').toUpperCase();
+                // Schöner Name für den Button
+                btn.innerText = id.split('_').slice(2).join(' ').toUpperCase() || id.toUpperCase();
                 btn.onclick = () => startDeck(id);
                 list.appendChild(btn);
             });
             loader.style.display = "none";
         }
 
-        function filterDecks() {
-            const q = document.getElementById('search-bar').value.toLowerCase();
-            document.querySelectorAll('.deck-btn').forEach(b => {
-                b.style.display = b.innerText.toLowerCase().includes(q) ? "block" : "none";
-            });
-        }
-
         function startDeck(id) {
             currentDeck = allDecks[id];
-            if (!currentDeck || currentDeck.length === 0) {
-                alert("Deck konnte nicht geladen werden.");
-                return;
-            }
+            if (!currentDeck) return;
             currentIndex = 0;
             isFront = true;
             document.getElementById('menu-screen').style.display = 'none';
@@ -153,48 +136,38 @@
             const progress = document.getElementById('progress');
             const data = currentDeck[currentIndex];
             
+            // Textinhalt setzen (HTML erlauben für <br> etc.)
             content.innerHTML = isFront ? data.q : data.a;
             progress.innerText = `Karte ${currentIndex + 1} von ${currentDeck.length}`;
             
-            // KaTeX Rendering (Wichtig!)
-            renderMathInElement(content, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ],
-                throwOnError: false
-            });
+            // Rendern triggern
+            setTimeout(() => {
+                renderMathInElement(content, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\[", right: "\\]", display: true}
+                    ],
+                    throwOnError: false
+                });
+            }, 10);
+            
             content.scrollTop = 0;
         }
 
-        function flipCard() {
-            isFront = !isFront;
-            showCard();
+        function flipCard() { isFront = !isFront; showCard(); }
+        function nextCard() { if (currentIndex < currentDeck.length - 1) { currentIndex++; isFront = true; showCard(); } }
+        function prevCard() { if (currentIndex > 0) { currentIndex--; isFront = true; showCard(); } }
+        function filterDecks() {
+            const q = document.getElementById('search-bar').value.toLowerCase();
+            document.querySelectorAll('.deck-btn').forEach(b => {
+                b.style.display = b.innerText.toLowerCase().includes(q) ? "block" : "none";
+            });
         }
 
-        function nextCard() {
-            if (currentIndex < currentDeck.length - 1) {
-                currentIndex++;
-                isFront = true;
-                showCard();
-            }
-        }
-
-        function prevCard() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                isFront = true;
-                showCard();
-            }
-        }
-
-        // App-Start
         window.onload = initializeApp;
-
-        // Service Worker Registrierung
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
